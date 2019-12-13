@@ -1,0 +1,73 @@
+<!DOCTYPE html5>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Favorite Books</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		{% load static %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+	</head>
+	<body>
+		{% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+					<li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+		<div>
+			<h2 style="display: inline-block;">Welcome, {{user.first_name}}!</h2>
+			<a style="display: inline-block; margin-left: 45%;" href="/logout">Log Out</a>
+		</div>
+		<!-- if the login is the one who added the book -->
+		{% if boolean %}
+			<div style="display: inline-block; vertical-align: top; ">
+				<form action="/edit/{{book.id}}" method="POST">
+					{% csrf_token %}
+					<input type="text" name="title" value ='{{book.title}}'>
+					<br>
+					<p> Added by {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}}</p>
+					<p> Added on: {{book.created_at}}</p>
+					<p> Last Updated on: {{book.updated_at}}</p>
+					<label>Description:</label>
+					<textarea name='desc' rows="4" cols="50">
+					{{book.desc}}
+					</textarea>
+					<input type="submit" value="Update"> <a href="/delete/{{book.id}}">Delete</a>
+				</form>
+			</div>
+		{% else %}
+			<!-- the login user is not the one who added the book -->
+			<div style="display: inline-block; vertical-align: top; ">
+				<h2>{{book.title}}</h2>
+				<p> Added by: {{book.uploaded_by.first_name}} {{book.uploaded_by.last_name}}</p>
+				<p> Added on: {{book.created_at}}</p>
+				<p> Last Updated on: {{book.updated_at}}</p>
+				<p> Description: {{book.desc}}</p>
+			</div>
+		{% endif %}
+		<div style="display: inline-block; vertical-align: top;">
+			<h2>Users Who Like This Book:</h2>
+			<ul>
+				{% if user in liked_users %}
+					{% for like in liked_users %}
+						{% if user == like %}
+							<li> {{like.first_name}} {{like.last_name}} <a href="/unfavorite/{{book.id}}">Un-favorite</a> </li>
+						{% else %}
+							<li> {{like.first_name}} {{like_last_name}}</li>
+						{% endif %}
+					{% endfor %}
+				{% else %}
+					{% for like in liked_users %}
+						<li> {{like.first_name}} {{like_last_name}}</li>
+					{% endfor %}
+					
+					
+				</ul>
+				<a href="/AddtoFavorite/{{book.id}}">Add to Favorite</a>
+			{% endif %}
+		</div>
+	</body>
