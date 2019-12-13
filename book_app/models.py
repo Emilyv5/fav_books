@@ -48,6 +48,8 @@ class BookManager(models.Manager):
 		return errors
 
 
+
+
 class Book(models.Model):
 	title = models.CharField(max_length=255)
 	desc = models.TextField()
